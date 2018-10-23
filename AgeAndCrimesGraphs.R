@@ -1,18 +1,16 @@
 rm(list = ls())
 
-rm(list = ls())
-
 url <- 'https://data.iowa.gov/api/views/murf-9x69/rows.csv?accessType=DOWNLOAD'
 
-df <- read.csv(file = url, stringsAsFactors = TRUE, na.strings = c(NA,""))
+df <- read.csv(file = url, stringsAsFactors = TRUE, na.strings = c(NA, ""))
 
 #remove rows that don't make sense
 df <- df[(df$Age - df$Years.Served) >= 0,]
 df$Serving.Life.with.Possibility.of.Parole <- NULL
-df <- df[complete.cases(df), ]
+df <- df[complete.cases(df),]
 
 #new column for binned ages
-df$Ages_binned <- cut(df$Age, 10*(0:10), labels = c("1-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80-90", "90-100"))
+df$Ages_binned <- cut(df$Age, 10 * (0 : 10), labels = c("1-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80-90", "90-100"))
 
 library(ggplot2)
 
@@ -26,7 +24,7 @@ ggsave(plot = p, filename = "AgeVsYearsServedScatterPlot.png", width = 8, height
 
 
 
-p <- qplot(x = Offense.Type.Most.Serious.Crime, data = df, geom = "bar", facets = .~Ages_binned, fill = Offense.Type.Most.Serious.Crime)
+p <- qplot(x = Offense.Type.Most.Serious.Crime, data = df, geom = "bar", facets = . ~ Ages_binned, fill = Offense.Type.Most.Serious.Crime)
 p <- p + xlab("Offense Type")
 p <- p + ylab("Count")
 p <- p + ggtitle("Offense Types Per Age Group")
@@ -40,12 +38,12 @@ ggsave(plot = p, filename = "AgeVsOffenseType.png", width = 8, height = 4, dpi =
 
 ggsave(plot = p, filename = "AgeVsOffenseType.png", width = 8, height = 4, dpi = 600)
 
-gg <- ggplot(df, aes(x=Sex)) + 
-      geom_bar(aes(fill = Offense.Class.Most.Serious.Crime)) +
-      labs(y="CRIME",
-           x="GENDER",
-           title="Gender Vs Type of Crime",
-           caption = "Source: data.iowa.gov")
+gg <- ggplot(df, aes(x = Sex)) +
+    geom_bar(aes(fill = Offense.Class.Most.Serious.Crime)) +
+    labs(y = "CRIME",
+    x = "GENDER",
+    title = "Gender Vs Type of Crime",
+    caption = "Source: data.iowa.gov")
 
 ggsave(plot = gg, filename = "GenderVsOffenseType.png", width = 8, height = 4, dpi = 600)
 

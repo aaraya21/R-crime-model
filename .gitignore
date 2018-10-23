@@ -1,2 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
-/.Rproj.user/
+.Rproj.user
+.RData
+.Rhistory
+*.png
+R-crime-model.Rproj

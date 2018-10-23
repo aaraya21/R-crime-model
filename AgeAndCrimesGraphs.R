@@ -30,3 +30,23 @@ p <- p + theme(axis.text.x = element_blank())
 
 ggsave(plot = p, filename = "AgeVsOffenseType.png", width = 8, height = 4, dpi = 600)
 
+
+
+# How does gender impact the type of crime one commits.  In addition, determine if there is a difference between male and female criminal activity.  We will analyze this with a histogram of offense type.(Anselmo)
+
+ggsave(plot = p, filename = "AgeVsOffenseType.png", width = 8, height = 4, dpi = 600)
+
+gg <- ggplot(df, aes(x=Sex)) + 
+  geom_bar(aes(fill = Offense.Class.Most.Serious.Crime)) +
+  labs(y="CRIME", 
+       x="GENDER", 
+       title="Gender Vs Type of Crime", 
+       caption = "Source: data.iowa.gov")
+
+ggsave(plot = gg, filename = "GenderVsOffenseType.png", width = 8, height = 4, dpi = 600)
+
+
+
+
+
+

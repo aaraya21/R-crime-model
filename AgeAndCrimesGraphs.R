@@ -1,6 +1,10 @@
 rm(list = ls())
 
-df <- read.csv(file = "Iowa_Prison_Population_-_Year_End.csv", stringsAsFactors = TRUE, na.strings = c(NA,""))
+rm(list = ls())
+
+url <- 'https://data.iowa.gov/api/views/murf-9x69/rows.csv?accessType=DOWNLOAD'
+
+df <- read.csv(file = url, stringsAsFactors = TRUE, na.strings = c(NA,""))
 
 #remove rows that don't make sense
 df <- df[(df$Age - df$Years.Served) >= 0,]
@@ -37,15 +41,15 @@ ggsave(plot = p, filename = "AgeVsOffenseType.png", width = 8, height = 4, dpi =
 ggsave(plot = p, filename = "AgeVsOffenseType.png", width = 8, height = 4, dpi = 600)
 
 gg <- ggplot(df, aes(x=Sex)) + 
-  geom_bar(aes(fill = Offense.Class.Most.Serious.Crime)) +
-  labs(y="CRIME", 
-       x="GENDER", 
-       title="Gender Vs Type of Crime", 
-       caption = "Source: data.iowa.gov")
+      geom_bar(aes(fill = Offense.Class.Most.Serious.Crime)) +
+      labs(y="CRIME",
+           x="GENDER",
+           title="Gender Vs Type of Crime",
+           caption = "Source: data.iowa.gov")
 
 ggsave(plot = gg, filename = "GenderVsOffenseType.png", width = 8, height = 4, dpi = 600)
 
-
+print(gg)
 
 
 

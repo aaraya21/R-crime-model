@@ -46,9 +46,3 @@ gg <- ggplot(df, aes(x = Sex)) +
     caption = "Source: data.iowa.gov")
 
 ggsave(plot = gg, filename = "GenderVsOffenseType.png", width = 8, height = 4, dpi = 600)
-
-print(gg)
-
-
-
-

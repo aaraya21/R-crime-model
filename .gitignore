@@ -4,3 +4,4 @@
 .Rhistory
 *.png
 R-crime-model.Rproj
+.idea/*

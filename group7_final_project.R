@@ -24,11 +24,12 @@ df <- read.csv(file = url, stringsAsFactors = TRUE, na.strings = c(NA, ""))
 print("################   Scrub Data   ################")
 
 print("Removing bad data")
-df <- df[(df$Age - df$Years.Served) >= 0,]
+df <- df[(df$Age - df$Years.Served) >= 15,]
 df$Serving.Life.with.Possibility.of.Parole <- NULL
 df <- df[complete.cases(df),]
 print("Adding Groupings (Bins)")
-df$Ages_binned <- cut(df$Age, 10 * (0 : 10), labels = c("1-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80-90", "90-100"))
+df$Ages_binned <- cut(df$Age, 10*(0:10), labels = c("1-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100"))
+df$AgeAtIncarceration <- df$Age - df$Years.Served
 df$Jurisdiction <- tolower(df$Jurisdiction)
 df$Jurisdiction <- na.omit(df$Jurisdiction, na)
 
@@ -36,22 +37,24 @@ df$Jurisdiction <- na.omit(df$Jurisdiction, na)
 maleCrimes <- df[which(df$gender == 'Male')]
 
 print("################   Analyzing Data   ################")
-p <- qplot(x = Age, y = Years.Served, data = df, geom = "point", color = Sex)
-p <- p + xlab("Age")
+p <- qplot(x = AgeAtIncarceration, y = Years.Served, data = df, geom = "point", color=Offense.Type.Most.Serious.Crime, alpha=.5)
+p <- p + xlab("Age at Incarceration")
 p <- p + ylab("Number of Years Served")
-p <- p + ggtitle("Age Vs. Number of Years Served")
+p <- p + ggtitle("Age at Incarceration Vs. Number of Years Served")
+p <- p + labs(color="Offense Type", alpha="Alpha", size="Years Served")
 
-graphList[['AgeVsYearsServedScatterPlot']] <- p
+graphList[['AgeAtIncarcerationVsYearsServedScatterPlot']] <- p
 
 
 
-p <- qplot(x = Offense.Type.Most.Serious.Crime, data = df, geom = "bar", facets = . ~ Ages_binned, fill = Offense.Type.Most.Serious.Crime)
-p <- p + xlab("Offense Type")
+p <- qplot(x = Offense.Type.Most.Serious.Crime, data = df, geom = "bar", facets = .~Ages_binned, fill = Offense.Type.Most.Serious.Crime)
+p <- p + xlab("Age Group")
 p <- p + ylab("Count")
 p <- p + ggtitle("Offense Types Per Age Group")
 p <- p + theme(axis.text.x = element_blank())
+p <- p + scale_fill_discrete(name = "Offense Type")
 
-graphList[['AgeVsOffenseType.png']] <- p
+graphList[['AgeVsOffenseType']] <- p
 
 p <- ggplot(df, aes(x = Sex)) +
     geom_bar(aes(fill = Offense.Class.Most.Serious.Crime)) +

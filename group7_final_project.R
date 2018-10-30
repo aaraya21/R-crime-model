@@ -73,13 +73,6 @@ p <- ggplot(df, aes(x = Sex)) +
 graphList[['GenderVsOffenseType']] <- p
 
 
-
-print("writing graphs to files")
-graphNames <- names(graphList)
-for (i in graphNames) {save_graph(toString(i), graphList[[i]])}
-
-
-
 # summary stats
 totalCrimes <- length(df[, "Sex"])
 countofCrimesbyGender <- df %>% group_by(Sex) %>% summarize(count = n())
@@ -115,9 +108,8 @@ fixed$region <- cr$region
 
 ###get map
 p <- county_choropleth(fixed, title = "Crimes by County", num_colors = 9, state_zoom = "iowa") +
-scale_fill_brewer(name="Frequency", palette="PuRd")
-ggsave(plot = p, filename = "FrequencyofCrimesbyCounty.png", width = 8, height = 4, dpi = 600)
-p
+      scale_fill_brewer(name="Frequency", palette="PuRd")
+graphList[['FrequencyofCrimesbyCounty']] <- p
 
 ##########################################################
 # Load population data by county
@@ -129,12 +121,15 @@ dpc <- df_pop_county
 # Make population map
 
 q <- county_choropleth(dpc, title = "Population by County", state_zoom = "iowa") +
-scale_fill_brewer(name = NULL, palette = "Blues")
-q
-ggsave(plot = q, filename = "PopulationbyCounty.png", width = 8, height = 4, dpi = 600)
+      scale_fill_brewer(name = NULL, palette = "Blues")
+
+graphList[['PopulationbyCounty']] <- q
 
 ###########################################################
 
+print("writing graphs to files")
+graphNames <- names(graphList)
+for (i in graphNames) {save_graph(toString(i), graphList[[i]])}
 
 print("processing complete")
 

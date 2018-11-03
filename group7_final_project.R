@@ -28,7 +28,7 @@ df <- df[(df$Age - df$Years.Served) >= 15,]
 df$Serving.Life.with.Possibility.of.Parole <- NULL
 df <- df[complete.cases(df),]
 print("Adding Groupings (Bins)")
-df$Ages_binned <- cut(df$Age, 10*(0:10), labels = c("1-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100"))
+df$Ages_binned <- cut(df$Age, 10 * (0 : 10), labels = c("1-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100"))
 df$AgeAtIncarceration <- df$Age - df$Years.Served
 df$Jurisdiction <- tolower(df$Jurisdiction)
 df$Jurisdiction <- na.omit(df$Jurisdiction, na)
@@ -37,17 +37,17 @@ df$Jurisdiction <- na.omit(df$Jurisdiction, na)
 maleCrimes <- df[which(df$gender == 'Male')]
 
 print("################   Analyzing Data   ################")
-p <- qplot(x = AgeAtIncarceration, y = Years.Served, data = df, geom = "point", color=Offense.Type.Most.Serious.Crime, alpha=.5)
+p <- qplot(x = AgeAtIncarceration, y = Years.Served, data = df, geom = "point", color = Offense.Type.Most.Serious.Crime, alpha = .5)
 p <- p + xlab("Age at Incarceration")
 p <- p + ylab("Number of Years Served")
 p <- p + ggtitle("Age at Incarceration Vs. Number of Years Served")
-p <- p + labs(color="Offense Type", alpha="Alpha", size="Years Served")
+p <- p + labs(color = "Offense Type", alpha = "Alpha", size = "Years Served")
 
 graphList[['AgeAtIncarcerationVsYearsServedScatterPlot']] <- p
 
 
 
-p <- qplot(x = Offense.Type.Most.Serious.Crime, data = df, geom = "bar", facets = .~Ages_binned, fill = Offense.Type.Most.Serious.Crime)
+p <- qplot(x = Offense.Type.Most.Serious.Crime, data = df, geom = "bar", facets = . ~ Ages_binned, fill = Offense.Type.Most.Serious.Crime)
 p <- p + xlab("Age Group")
 p <- p + ylab("Count")
 p <- p + ggtitle("Offense Types Per Age Group")
@@ -95,9 +95,9 @@ cr <- cr[, c("region", "county.name")]
 head(cr)
 
 ###reorder summ & cr
-j_summ_ordered <- j_summ[order(tolower(df$Jurisdiction)), ]
+j_summ_ordered <- j_summ[order(tolower(df$Jurisdiction)),]
 
-cr <- cr[order(cr$county.name), ]
+cr <- cr[order(cr$county.name),]
 
 ###check if counties and jurisdiction are the same
 identical(tolower(j_summ_ordered), cr$county.name)
@@ -111,7 +111,7 @@ fixed$region <- cr$region
 
 ###get map
 p <- county_choropleth(fixed, title = "Crimes by County", num_colors = 9, state_zoom = "iowa") +
-      scale_fill_brewer(name="Frequency", palette="PuRd")
+scale_fill_brewer(name = "Frequency", palette = "PuRd")
 graphList[['FrequencyofCrimesbyCounty']] <- p
 
 ##########################################################
@@ -124,9 +124,23 @@ dpc <- df_pop_county
 # Make population map
 
 q <- county_choropleth(dpc, title = "Population by County", state_zoom = "iowa") +
-      scale_fill_brewer(name = NULL, palette = "Blues")
+scale_fill_brewer(name = NULL, palette = "Blues")
 
 graphList[['PopulationbyCounty']] <- q
+
+
+###########################################################
+dpc <- dpc[dpc$region %in% fixed$region, ]
+dpc <- dpc[order(dpc$region), ]
+identical(dpc$region, fixed$region)
+dpc2 <- dpc
+dpc2$value <- fixed$value/dpc$value
+
+# Get map
+s <- county_choropleth(dpc2, title = "Per Capita Crimes by County", state_zoom = "iowa") +
+    scale_fill_brewer(name = "Frequency", palette = 15)
+
+graphList[['PerCapitaCrimes']] <- s
 
 ###########################################################
 

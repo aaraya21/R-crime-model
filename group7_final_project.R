@@ -148,5 +148,76 @@ print("writing graphs to files")
 graphNames <- names(graphList)
 for (i in graphNames) {save_graph(toString(i), graphList[[i]])}
 
+
+
+#################
+
+# Analysis of Race/Ethnic origin impact on crimes
+
+library(scales)
+
+#Add Hispanic to the Race factors
+levels(df$Race) <- c(levels(df$Race), "Hispanic")
+df$Race[which(df$Ethnic.Origin == "Hispanic")] <- "Hispanic"
+
+# Make the Race a ordered factor for easier analysis
+df$Race <- ordered(df$Race, levels = c("American Indian or Alaska Native ","Asian or Pacific Islander ",  "Black ", "Hispanic", "White "))
+summary(df$Race)
+
+# Create a bar plot for convicted Crimes by Race
+p <- ggplot(df, aes(x = Race, fill = I("steelblue")))
+p <- p + geom_bar(aes(y = (..count..)/sum(..count..)))
+p <- p + geom_text(aes(y = ((..count..)/sum(..count..)),
+label = scales::percent((..count..)/sum(..count..))),
+stat = "count", hjust = -0.1)
+p <- p + coord_flip()
+p <- p + xlab("Race/Ethnic Origin")
+p <- p + ylab("Percentage")
+p <- p + ggtitle("Crimes (imprisoned) by Race/Ethnic Origin")
+p <- p + scale_y_continuous(labels = scales::percent, limits = c(0, 1))
+
+
+ggsave(plot = p, filename = "CrimesWithRaceDistribution.png", width = 8, height = 4, dpi = 600)
+
+
+# Create a data frame from quick stats page of https://www.census.gov/quickfacts/ia
+# Adjust it to include Ethnic Origin as a Race.
+df_ia <- data.frame(Race=c("American Indian or Alaska Native ","Asian or Pacific Islander ","Black ","White ","Hispanic"),
+Percentage=c(0.5,2.7,3.8,85.5,7.5))
+
+# Create a bar plot (geom_col()) to create a graph for side-by-side comparison
+p <- ggplot(df_ia, aes(Race, Percentage, fill = I("steelblue")))
+p <- p + geom_col()
+p <- p + coord_flip()
+p <- p + geom_text(aes(label = paste(Percentage,"%",''), y = Percentage + 2,  hjust = 0.1))
+p <- p + ggtitle("Population Distribution by Race/Ethnic Origin")
+p <- p + scale_y_continuous(limits = c(0, 100))
+
+save_graph("GeneralPopulationWithRaceDistribution",p)
+
+
+
+p <- qplot(x = AgeAtIncarceration, data = df, geom = "histogram", binwidth = 10, facets = .~Offense.Type.Most.Serious.Crime, fill = Race)
+p <- p + scale_fill_hue(name = "Default")
+p <- p + xlab("Race/Ethnic Origin ")
+p <- p + ylab("Count")
+p <- p + ggtitle("Age at Incarceration vs Race/Ethnic Origin per Offense Type")
+p <- p + theme(legend.position = "bottom" )
+
+ggsave(plot = p, filename = "RaceVsAgeOfCrime-Facets-OffenseType.png", width = 10, height = 4, dpi = 600)
+
+
+
+# Create a box plot to represent Race vs Age at incarceration
+p <- qplot(Race, AgeAtIncarceration, data = df, geom = "boxplot")
+p <- p + ylab("Age at Incarceration")
+p <- p + xlab("Race")
+p <- p + ggtitle("Age at Incarceration vs Race/Ethnic Origin")
+p <- p + theme(legend.position = "bottom" )
+
+ggsave(plot = p, filename = "RaceVsAgeOfCrimeBox.png", width = 10, height = 4, dpi = 600)
+
+
+################
 print("processing complete")
 
